@@ -1,9 +1,94 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/* Style the chatbot container */
+.chatbot-container {
+  width: 400px;
+  height: 600px;
+  margin: auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+}
 
-{% block content %}
-     <h1>Work</h1> 
-     <p> 
-         This is the work page. 
-     </p> 
-{% endblock %}
- <!--  -->
+/* Style the chat messages */
+.chatbot-messages {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 400px;
+  overflow-y: scroll;
+}
+
+/* Style the chat message bubbles */
+.chatbot-message {
+  margin-bottom: 10px;
+}
+.chatbot-message-user {
+  display: inline-block;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  float: left;
+  height:auto;
+  width: 200px;
+}
+.chatbot-message-bot {
+  display: inline-block;
+  padding: 10px;
+  background-color: #e5e5e5;
+  border-radius: 5px;
+  float: right;
+  height:auto;
+  width:200px;
+}
+
+/* Style the input and button */
+.chatbot-input-container {
+  display: flex;
+  margin-top: 10px;
+}
+.chatbot-input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.chatbot-button {
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<!-- Create the chatbot container -->
+<div class="chatbot-container">
+
+<!-- Create the chat messages -->
+<ul class="chatbot-messages">
+
+    {% for message in messages %}
+    {% if loop.index0 % 2 == 0 %}
+    {% set message_class = "chatbot-message-user" %}
+    {% else %}
+    {% set message_class = "chatbot-message-bot" %}
+    {% endif %}
+    <li class="chatbot-message {{ message_class }}">{{ message }}</li>
+    {% endfor %}
+
+</ul>
+
+<!-- Create the input and button -->
+<div class="chatbot-input-container">
+    <form method="post", action="/chatbot">
+        <input class="chatbot-input" type="text" name="message" placeholder="Type a message...">
+        <button class="chatbot-button" type="submit">Send</button>
+    </form>
+</div>
+
+</div>

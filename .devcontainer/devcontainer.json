@@ -13,7 +13,7 @@
     "5000": {
       "label": "Application",
       "onAutoForward": "openPreview"
-    }
+    },
   },
   "customizations": {
     "codespaces": {
@@ -27,5 +27,5 @@
       ]
     }
   },
-  "forwardPorts": [5000]
+  "forwardPorts": [5000, 6379]
 }

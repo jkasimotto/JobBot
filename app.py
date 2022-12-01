@@ -1,6 +1,10 @@
+import os
 from redis import Redis
 from flask import Flask, render_template, request, session, redirect, url_for
 from flask_session import Session
+import openai
+
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 app = Flask(__name__)
 
@@ -8,10 +12,10 @@ app = Flask(__name__)
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = True
-app.config["SESSION_TYPE"] = "filesystem"
-app.config["SESSION_FILE_DIR"] = "/tmp"
+app.config["SESSION_TYPE"] = "redis"
 app.config["SECRET_KEY"] = "dev"
-Session(app, store=Redis(host="localhost", port=6379))
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+Session(app)
 
 @app.route("/")
 def hello_world():
@@ -30,6 +34,8 @@ def login():
         if passcode == "1234":
             # Set the logged_in session variable
             session["logged_in"] = True
+            session["messages"] = ["Hey! How are you doing today? My name is K."]
+            session.modified = True
             print(session["logged_in"])
 
             # Redirect the user to the work screen
@@ -46,11 +52,46 @@ def login():
 @app.route("/work", methods=["GET", "POST"])
 def work():
     # Check if the user is logged in
-    print(session.get("logged_in"))
     if session.get("logged_in"):
         # The user is logged in, so render the work screen
-        return render_template("work.html")
+        return render_template("work.html", messages=session["messages"])
 
     else:
         # The user is not logged in, so redirect them to the login screen
         return redirect(url_for("login"))
+
+@app.route("/chatbot", methods=["GET", "POST"])
+def chatbot():
+    if request.method == "POST":
+        # Get the response from the user's input
+        message = request.form.get("message")
+        session["messages"].append(message)
+        prompt = construct_prompt(session["messages"])
+        print(prompt)
+        chatbot_message = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=prompt,
+            temperature=0.9,
+            max_tokens=1000,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0.6,
+            stop=["Client:"],
+        )
+        session["messages"].append(chatbot_message["choices"][0]["text"].replace("K:", ""))
+        session.modified = True
+
+        return render_template("work.html", messages=session.get("messages"))
+    else:
+        pass
+
+
+def construct_prompt(messages):
+    prompt = "K is an expert in recruitment and career advice. K understands many people are unaware of the multitude of jobs that exist out there. K asks deeply personal questions to best understand what job would suit his client. K knows that asking people what kind of job they're looking for is pointless; instead K asks questions about their personality and experiences. K also recognises that open ended questions can cause his client's to miss alot of information. The following is a converastion between K and a client."
+    for i, message in enumerate(messages):
+        if i % 2 == 0:
+            prompt += f"K: {message}"
+        else:
+            prompt += f"Client: {message}"
+    prompt += "K:"
+    return prompt
