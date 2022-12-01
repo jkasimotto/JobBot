@@ -1,0 +1,58 @@
+
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+
+<body>
+    <div class="App">
+        <header class="App-header">
+            <!-- Add a form element with the "post" method and the "login" action -->
+            <form method="post" action="{{ url_for('login') }}">
+                <div class="passcode-box"><input name="digit1" type="text" maxlength="1" /></div>
+                <div class="passcode-box"><input name="digit2" type="text" maxlength="1" /></div>
+                <div class="passcode-box"><input name="digit3" type="text" maxlength="1" /></div>
+                <div class="passcode-box"><input name="digit4" type="text" maxlength="1" /></div>
+
+                <!-- Add a submit button -->
+                <input type="submit" value="Submit" />
+            </form>
+        </header>
+    </div>
+</body>
+
+</html>
+
+<script>
+    // Get a reference to the input elements
+    const inputElements = document.querySelectorAll("input");
+
+    // Loop through the input elements
+    inputElements.forEach((inputElement, index) => {
+        // Add an event listener to each input element for the "input" event
+        inputElement.addEventListener("input", event => {
+            // Check if the input element has reached its maxlength
+            if (event.target.value.length === event.target.maxLength) {
+                // If the input element is not the last one, move focus to the next input element
+                if (index < inputElements.length - 1) {
+                    inputElements[index + 1].focus();
+                }
+            }
+        });
+
+        // Add an event listener to each input element for the "keydown" event
+        inputElement.addEventListener("keydown", event => {
+            // Check if the user pressed the Backspace or Delete key
+            if (event.key === "Backspace" || event.key === "Delete") {
+                // If the input element is not empty, clear its value
+                if (event.target.value !== "") {
+                    event.target.value = "";
+                }
+
+                // If the input element is not the first one, move focus to the previous input element
+                else if (index > 0) {
+                    inputElements[index - 1].focus();
+                }
+            }
+        });
+    });
+</script>

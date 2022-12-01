@@ -1,0 +1,32 @@
+<style>
+    /* Set the box dimensions and spacing */
+    .box {
+        width: 100px;
+        height: 90%;
+        margin: 5px;
+    }
+
+    /* Set the container properties */
+    .container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    /* Set the box colors */
+    .box-1 { background-color: white; }
+    .box-2 { background-color: blue; }
+    .box-3 { background-color: black; }
+    .box-4 { background-color: teal; }
+</style>
+
+<!-- Add a container element to hold the boxes -->
+<div class="container">
+    <!-- Add four box elements with the appropriate classes -->
+    <div class="box box-1"></div>
+    <div class="box box-2"></div>
+    <div class="box box-3">
+        {% block content %}
+        {% endblock %}
+    </div>
+    <div class="box box-4"></div>
+</div>
